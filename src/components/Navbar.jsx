@@ -4,7 +4,7 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 
 const Navigation = () => {
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    <Navbar bg="primary" variant="dark" expand="lg">
       <Container>
         <Navbar.Brand as={Link} to="/">Mi App</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

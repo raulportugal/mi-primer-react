@@ -1,7 +1,7 @@
-// src/components/PersonaForm.js
 import React, { useState, useEffect } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
 
-const PersonaForm = ({ agregar, actualizar, personaSeleccionada }) => {
+const PersonaForm = ({ show, handleClose, agregar, actualizar, personaSeleccionada }) => {
   const [nombre, setNombre] = useState("");
   const [edad, setEdad] = useState("");
 
@@ -13,7 +13,7 @@ const PersonaForm = ({ agregar, actualizar, personaSeleccionada }) => {
       setNombre("");
       setEdad("");
     }
-  }, [personaSeleccionada]);
+  }, [personaSeleccionada]); // Este efecto se ejecuta cuando personaSeleccionada cambia
 
   const manejarEnvio = (e) => {
     e.preventDefault();
@@ -32,22 +32,26 @@ const PersonaForm = ({ agregar, actualizar, personaSeleccionada }) => {
   };
 
   return (
-    <div className="card p-3">
-      <h4 className="text-center">{personaSeleccionada ? "Editar Persona" : "Agregar Persona"}</h4>
-      <form onSubmit={manejarEnvio}>
-        <div className="mb-3">
-          <label className="form-label">Nombre</label>
-          <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Edad</label>
-          <input type="number" className="form-control" value={edad} onChange={(e) => setEdad(e.target.value)} />
-        </div>
-        <button type="submit" className="btn btn-primary w-100">
-          {personaSeleccionada ? "Actualizar" : "Agregar"}
-        </button>
-      </form>
-    </div>
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>{personaSeleccionada ? "Editar Persona" : "Agregar Persona"}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={manejarEnvio}>
+          <Form.Group className="mb-3">
+            <Form.Label>Nombre</Form.Label>
+            <Form.Control type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Edad</Form.Label>
+            <Form.Control type="number" value={edad} onChange={(e) => setEdad(e.target.value)} required />
+          </Form.Group>
+          <Button variant="primary" type="submit">
+            {personaSeleccionada ? "Actualizar" : "Agregar"}
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
   );
 };
 

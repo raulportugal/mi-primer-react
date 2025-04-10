@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { obtenerPersonas, agregarPersona, actualizarPersona, eliminarPersona } from "../services/personaService";
-import PersonaList from "../components/PersonaList";
-import PersonaForm from "../components/PersonaForm";
+import PersonaList from "../components/personas/PersonaList";
+import PersonaForm from "../components/personas/PersonaForm";
 import { Button } from "react-bootstrap";
 
 const Personas = () => {
@@ -45,7 +45,16 @@ const Personas = () => {
   return (
     <div>
       <h2>Gestión de Personas</h2>
-      <Button className="mb-3" variant="primary" onClick={() => setMostrarModal(true)}>Agregar Persona</Button>
+      <Button 
+      className="mb-3" 
+      variant="primary"
+       onClick={() => {
+       setPersonaSeleccionada(null);
+       setMostrarModal(true);
+      }
+      }
+       >Agregar Persona</Button>
+
       <PersonaList personas={personas} seleccionar={seleccionarPersona} eliminar={eliminar} />
       <PersonaForm
         show={mostrarModal}

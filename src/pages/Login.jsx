@@ -1,75 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import { AuthContext } from "../context/AuthContext";
+import { Form, Button, Alert, Card } from "react-bootstrap";
 
 const Login = () => {
+  const { setUser } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [bienvenida, setBienvenida] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setBienvenida("");
 
     try {
-      const response = await axios.post("http://localhost:3001/api/v1/login", {
+      const res = await axios.post("http://localhost:3001/api/v1/login", {
         email,
         password,
       });
 
-      sessionStorage.setItem("token", response.data.token);
-      sessionStorage.setItem("nombre", response.data.user.nombre);
-      setBienvenida("¡Bienvenido al sistema!");
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+
+      const decoded = jwtDecode(token);
+      setUser(decoded);
+      setMessage("¡Bienvenido al sistema!");
 
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      }, 1000);
     } catch (err) {
-      setError(err.response?.data?.error || "Error al iniciar sesión");
+      setMessage("Credenciales incorrectas");
     }
   };
 
   return (
-    <Card className="mx-auto" style={{ maxWidth: "400px", marginTop: "100px" }}>
-      <Card.Body>
-        <h3 className="mb-4 text-center">Iniciar Sesión</h3>
-
-        {error && <Alert variant="danger">{error}</Alert>}
-        {bienvenida && <Alert variant="success">{bienvenida}</Alert>}
-
-        <Form onSubmit={handleLogin}>
-          <Form.Group className="mb-3">
-            <Form.Label>Correo electrónico</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Ingresa tu email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Contraseña</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </Form.Group>
-
-          <Button variant="primary" type="submit" className="w-100">
-            Ingresar
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
+    <div className="d-flex justify-content-center align-items-center" style={{ height: "80vh" }}>
+      <Card style={{ width: "25rem" }}>
+        <Card.Body>
+          <Card.Title className="mb-4">Iniciar Sesión</Card.Title>
+          {message && <Alert variant="info">{message}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Email:</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Ingresa tu email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Contraseña:</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Ingresa tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" className="w-100">
+              Ingresar
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </div>
   );
 };
 

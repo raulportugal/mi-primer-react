@@ -1,37 +1,53 @@
-import React from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/shared/Navbar";
 import Home from "./pages/Home";
 import Personas from "./pages/Personas";
 import Login from "./pages/Login";
 import Footer from "./components/shared/Footer";
+import { AuthContext } from "./context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
-  const location = useLocation();
-  const token = sessionStorage.getItem("token");
+  const { user, setUser } = useContext(AuthContext);
 
-  // Redirige a login si no hay token y no estás en /login
-  if (!token && location.pathname !== "/login") {
-    return <Navigate to="/login" />;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        if (decoded.exp * 1000 > Date.now()) {
+          setUser(decoded);
+        } else {
+          localStorage.removeItem("token");
+        }
+      } catch {
+        localStorage.removeItem("token");
+      }
+    }
+  }, [setUser]);
 
   return (
     <>
-      {/* Navbar solo si hay sesión */}
-      {token && <Navbar />}
+      {user && <Navbar />}
       <div className="container mt-3">
         <Routes>
-          <Route path="/login" element={<Login />} />
-          {token && (
-            <>
-              <Route path="/" element={<Home />} />
-              <Route path="/personas" element={<Personas />} />
-            </>
-          )}
+          <Route
+            path="/"
+            element={user ? <Home /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/personas"
+            element={user ? <Personas /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/login"
+            element={!user ? <Login /> : <Navigate to="/" />}
+          />
         </Routes>
       </div>
-      {token && <Footer />}
+      <Footer />
     </>
   );
 };

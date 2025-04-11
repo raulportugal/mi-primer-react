@@ -1,41 +1,51 @@
-import React from "react";
-import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import React, { useContext } from "react";
+import { Navbar as BsNavbar, Nav, Container, Dropdown } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
-const AppNavbar = () => {
+const Navbar = () => {
+  const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
-  const token = sessionStorage.getItem("token");
-  const nombre = sessionStorage.getItem("nombre");
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("nombre");
+    localStorage.removeItem("token");
+    setUser(null);
     navigate("/login");
   };
 
-  if (!token) return null;
-
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    <BsNavbar bg="dark" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">Mi App</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <BsNavbar.Brand as={Link} to="/">Mi App</BsNavbar.Brand>
+        <BsNavbar.Toggle aria-controls="basic-navbar-nav" />
+        <BsNavbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Inicio</Nav.Link>
             <Nav.Link as={Link} to="/personas">Personas</Nav.Link>
           </Nav>
-          <Nav>
-            <Navbar.Text className="me-3">
-              Bienvenido, <strong>{nombre}</strong>
-            </Navbar.Text>
-            <Button variant="outline-light" onClick={handleLogout}>Cerrar sesión</Button>
-          </Nav>
-        </Navbar.Collapse>
+
+          {user && (
+            <Dropdown align="end">
+              <Dropdown.Toggle variant="secondary" id="dropdown-user">
+                {user.name?.toUpperCase()}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => alert("Sistema creado por Raúl")}>
+                  Acerca de Mi APP
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => alert("Funcionalidad aún no implementada")}>
+                  Cambiar contraseña
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={handleLogout}>Cerrar sesión</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
+        </BsNavbar.Collapse>
       </Container>
-    </Navbar>
+    </BsNavbar>
   );
 };
 
-export default AppNavbar;
-
+export default Navbar;

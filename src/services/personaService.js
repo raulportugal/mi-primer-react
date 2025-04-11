@@ -1,45 +1,82 @@
-const API_URL = "http://localhost:3001/api/v1/personas";
+const API_URL = "http://localhost:3001/api/v1/personas"; // Cambia esta URL si tu backend está en otro lugar
 
-// Función para obtener el token actual
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("token");
-  return {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
+const getAuthHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+});
+
+const manejarError = (error) => {
+  console.error("Error en personaService:", error.message);
+  if (error.message.includes("401") || error.message.includes("Token")) {
+    localStorage.removeItem("token");
+    window.location.href = "/login"; // Redirecciona al login si el token expiró
+  }
 };
 
+// Obtener todas las personas
 export const obtenerPersonas = async () => {
-  const respuesta = await fetch(API_URL, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-  if (!respuesta.ok) throw new Error("Error al obtener personas");
-  return await respuesta.json();
+  try {
+    const respuesta = await fetch(API_URL, {
+      headers: getAuthHeaders(),
+    });
+
+    if (!respuesta.ok) {
+      throw new Error(`Error ${respuesta.status} al obtener personas`);
+    }
+
+    return await respuesta.json();
+  } catch (error) {
+    manejarError(error);
+    return []; // Devuelve un array vacío para evitar romper el front
+  }
 };
 
+// Agregar una persona
 export const agregarPersona = async (persona) => {
-  const respuesta = await fetch(API_URL, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(persona),
-  });
-  if (!respuesta.ok) throw new Error("Error al agregar persona");
+  try {
+    const respuesta = await fetch(API_URL, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(persona),
+    });
+
+    if (!respuesta.ok) {
+      throw new Error(`Error ${respuesta.status} al agregar persona`);
+    }
+  } catch (error) {
+    manejarError(error);
+  }
 };
 
+// Actualizar persona por ID
 export const actualizarPersona = async (id, persona) => {
-  const respuesta = await fetch(`${API_URL}/${id}`, {
-    method: "PUT",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(persona),
-  });
-  if (!respuesta.ok) throw new Error("Error al actualizar persona");
+  try {
+    const respuesta = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(persona),
+    });
+
+    if (!respuesta.ok) {
+      throw new Error(`Error ${respuesta.status} al actualizar persona`);
+    }
+  } catch (error) {
+    manejarError(error);
+  }
 };
 
+// Eliminar persona por ID
 export const eliminarPersona = async (id) => {
-  const respuesta = await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
-  if (!respuesta.ok) throw new Error("Error al eliminar persona");
+  try {
+    const respuesta = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+
+    if (!respuesta.ok) {
+      throw new Error(`Error ${respuesta.status} al eliminar persona`);
+    }
+  } catch (error) {
+    manejarError(error);
+  }
 };

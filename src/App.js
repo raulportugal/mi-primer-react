@@ -4,10 +4,11 @@ import Navbar from "./components/shared/Navbar";
 import Home from "./pages/Home";
 import Personas from "./pages/Personas";
 import Login from "./pages/Login";
+import AcercaDe from "./pages/AcercaDe";
 import Footer from "./components/shared/Footer";
 import { AuthContext } from "./context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -45,6 +46,7 @@ const App = () => {
             path="/login"
             element={!user ? <Login /> : <Navigate to="/" />}
           />
+          <Route path="/acercade" element={<AcercaDe />} />
         </Routes>
       </div>
       <Footer />

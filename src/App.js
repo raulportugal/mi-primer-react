@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/shared/Navbar";
 import Home from "./pages/Home";
+import CategoriaPage from "./pages/CategoriaPage";
 import Personas from "./pages/Personas";
 import Login from "./pages/Login";
 import AcercaDe from "./pages/AcercaDe";
@@ -41,6 +42,10 @@ const App = () => {
           <Route
             path="/personas"
             element={user ? <Personas /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/categorias"
+            element={user ? <CategoriaPage /> : <Navigate to="/login" />}
           />
           <Route
             path="/login"

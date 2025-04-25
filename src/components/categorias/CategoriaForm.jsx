@@ -1,50 +1,72 @@
-// src/components/categorias/CategoriaForm.jsx
 import React, { useState, useEffect } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
+import Swal from "sweetalert2";
 
-const CategoriaForm = ({ onSave, selectedCategoria, onCancel }) => {
-  const [categoria, setCategoria] = useState({
-    categoria: ""
-  });
+const CategoriaForm = ({ show, handleClose, agregar, actualizar, categoriaSeleccionada }) => {
+  const [categoria, setCategoria] = useState("");
+  const [errores, setErrores] = useState({});
 
   useEffect(() => {
-    if (selectedCategoria) {
-      setCategoria(selectedCategoria);
+    if (categoriaSeleccionada) {
+      setCategoria(categoriaSeleccionada.categoria);
     } else {
-      setCategoria({ categoria: "" });
+      setCategoria("");
     }
-  }, [selectedCategoria]);
+    setErrores({});
+  }, [categoriaSeleccionada]);
 
-  const handleChange = (e) => {
-    setCategoria({ ...categoria, [e.target.name]: e.target.value });
+  const validar = () => {
+    const nuevosErrores = {};
+    if (!categoria.trim()) nuevosErrores.categoria = "La categoría es obligatoria";
+
+    setErrores(nuevosErrores);
+    return Object.keys(nuevosErrores).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const manejarEnvio = (e) => {
     e.preventDefault();
-    onSave(categoria);
-    setCategoria({ categoria: "" });
+    if (!validar()) {
+      Swal.fire("Campos inválidos", "Por favor revisa los datos ingresados", "error");
+      return;
+    }
+
+    const nuevaCategoria = { categoria };
+
+    if (categoriaSeleccionada) {
+      actualizar(categoriaSeleccionada.id_categoria, nuevaCategoria);
+    } else {
+      agregar(nuevaCategoria);
+    }
+
+    setCategoria("");
+    setErrores({});
+    handleClose();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4">
-      <h4>{selectedCategoria ? "Editar Categoría" : "Registrar Categoría"}</h4>
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>{categoriaSeleccionada ? "Editar Categoría" : "Agregar Categoría"}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={manejarEnvio}>
+          <Form.Group className="mb-3">
+            <Form.Label>Nombre de Categoría</Form.Label>
+            <Form.Control
+              type="text"
+              value={categoria}
+              onChange={(e) => setCategoria(e.target.value)}
+              isInvalid={!!errores.categoria}
+            />
+            <Form.Control.Feedback type="invalid">{errores.categoria}</Form.Control.Feedback>
+          </Form.Group>
 
-      <div className="mb-2">
-        <label className="form-label">Nombre de Categoría</label>
-        <input
-          type="text"
-          className="form-control"
-          name="categoria"
-          value={categoria.categoria}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <button type="submit" className="btn btn-primary me-2">Guardar</button>
-      {selectedCategoria && (
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancelar</button>
-      )}
-    </form>
+          <Button variant="primary" type="submit">
+            {categoriaSeleccionada ? "Actualizar" : "Agregar"}
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
   );
 };
 

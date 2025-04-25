@@ -26,6 +26,7 @@ const Navbar = () => {
               <NavDropdown.Item as={Link} to="/productos">Productos</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/proveedores">Proveedores</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/categorias">Categorías</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/personas">Personas</NavDropdown.Item>
             </NavDropdown>
 
             <NavDropdown title="Ingresos" id="ingresos-dropdown">
